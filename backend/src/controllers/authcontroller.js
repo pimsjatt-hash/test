@@ -54,7 +54,7 @@ export const loginWithPassword = async (req, res) => {
     const token = jwt.sign(
       { id: user._id, role: user.role, subAdminRole: user.subAdminRole, dynamicSubRole: user.dynamicSubRole },
       process.env.JWT_SECRET,
-      { expiresIn: "12h" }
+      { expiresIn: "2d" }
     );
 
     res.json({ token, role: user.role });
@@ -81,6 +81,7 @@ export const requestOtp = async (req, res) => {
     await user.save();
 
     // TODO: send OTP via email or SMS
+   // await(email, otpCode);
     console.log(`OTP for ${email}: ${otpCode}`);
 
     res.json({ message: "OTP sent successfully" });

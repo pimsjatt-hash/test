@@ -5,7 +5,7 @@ import {
   loginWithPassword,
   requestOtp,
   loginWithOtp
-} from "../controllers/authController.js";
+} from "../controllers/authcontroller.js";
 
 import { authMiddleware } from "../middleware/auth.js"; // if needed for protected routes
 

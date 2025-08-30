@@ -20,6 +20,8 @@ import certificateRoutes from "./src/routes/certificate.js";
 import couponRoutes from "./src/routes/coupon.js";
 import roleManagerRoutes from "./src/routes/rolemanager.js";
 import userRoutes from "./src/routes/user.js";
+import teacherRoutes from "./src/routes/teacher.js";
+import studentRoutes from "./src/routes/student.js";
 
 
 // load environment variables
@@ -32,11 +34,16 @@ const __dirname = path.dirname(__filename);
 const app = express();
 
 
-app.use(cors({
-  origin: "http://localhost:5173",  // allow your Vite frontend
-  methods: ["GET", "POST", "PUT", "DELETE"],
-  credentials: true                 // if using cookies / auth headers
-}));
+app.use(
+  cors({
+    origin: "http://localhost:5173", // frontend dev URL
+    methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"], // allow all
+    allowedHeaders: ["Content-Type", "Authorization"],
+  })
+);
+
+// Handle preflight requests explicitly
+// app.options("*", cors());
 
 // -------------------
 // Middlewares
@@ -74,6 +81,7 @@ app.get("/healthz", (req, res) => res.json({ ok: true }));
 app.use("/api/auth", authRoutes); //done
 app.use("/api/superadmin", superAdminRoutes); //DONE
 app.use("/api/courses", courseRoutes);
+app.use("/api/teacher", teacherRoutes);
 app.use("/api/blogs", blogRoutes);
 app.use("/api/finance", financeRoutes);
 app.use("/api/governance", governanceRoutes);
@@ -81,6 +89,7 @@ app.use("/api/certificates", certificateRoutes);
 app.use("/api/coupons", couponRoutes); // done
 app.use("/api/rolemanager", roleManagerRoutes);
 app.use("/api/users", userRoutes); // done
+app.use("/api/student", studentRoutes); // done
 
 // -------------------
 // Fallback

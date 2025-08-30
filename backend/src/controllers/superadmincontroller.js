@@ -8,7 +8,7 @@ import bcrypt from "bcryptjs";
 // -------------------- CREATE FIXED SUB-ADMIN --------------------
 export const createManager = async (req, res) => {
   try {
-    const { name, email, password, subAdminRole } = req.body;
+    const { name, email,phone, password, subAdminRole } = req.body;
 
     if (!["blog_manager", "finance_manager", "governance", "role_manager"].includes(subAdminRole)) {
       return res.status(400).json({ success: false, message: "Invalid sub-admin role" });
@@ -17,11 +17,11 @@ export const createManager = async (req, res) => {
     const existing = await User.findOne({ email });
     if (existing) return res.status(400).json({ success: false, message: "User already exists" });
 
-    const hashedPassword = await bcrypt.hash(password, 10);
+    // const hashedPassword = await bcrypt.hash(password, 10);
     const newUser = new User({
       name,
       email,
-      password: hashedPassword,
+      password,
       role: "sub-admin",
       subAdminRole,
       status: "approved", // fixed sub-admins are approved by default

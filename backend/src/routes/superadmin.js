@@ -9,7 +9,7 @@ import {
   approveCourse,
   approveUniversity,
   deleteUser, updateSubRole
-} from "../controllers/superAdminController.js";
+} from "../controllers/superAdmincontroller.js";
 
 const router = express.Router();
 

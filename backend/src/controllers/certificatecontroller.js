@@ -4,44 +4,58 @@ import Course from "../models/course.js";
 import User from "../models/user.js";
 import crypto from "crypto";
 import path from "path";
+import fs from "fs";
+
+
+
+
+
+
 
 /**
  * ==========================
  * TEMPLATE MANAGEMENT (SuperAdmin Only)
  * ==========================
  */
- export const createTemplate = async (req, res) => {
+export const createTemplate = async (req, res) => {
   try {
-    // Ensure name and signatoryName exist
-    const name = req.body.name ? req.body.name.trim() : "";
-    const signatoryName = req.body.signatoryName ? req.body.signatoryName.trim() : "";
+    const name = req.body?.name?.trim();
+    const signatoryName = req.body?.signatoryName?.trim();
 
     if (!name || !signatoryName) {
-      return res.status(400).json({ message: "Template name or the signatory name required" });
+      return res.status(400).json({ message: "Template name and signatory name are required" });
     }
 
-    // designUrl is optional
-    const designUrl = req.body.designUrl ? req.body.designUrl.trim() : "";
+    const designUrl = req.body?.designUrl?.trim() || "";
 
-    // Handle fields array safely
+    // Handle fields
     let fields = ["studentName", "courseId", "score"];
     if (req.body.fields) {
-      try {
-        // Try parsing JSON array
-        fields = JSON.parse(req.body.fields);
-        if (!Array.isArray(fields)) fields = ["studentName", "courseId", "score"];
-      } catch {
-        // If not JSON, treat as comma-separated string
-        fields = req.body.fields.split(",").map(f => f.trim());
+      if (Array.isArray(req.body.fields)) {
+        fields = req.body.fields;
+      } else if (typeof req.body.fields === "string") {
+        try {
+          fields = JSON.parse(req.body.fields);
+          if (!Array.isArray(fields)) {
+            fields = req.body.fields.split(",").map(f => f.trim());
+          }
+        } catch {
+          fields = req.body.fields.split(",").map(f => f.trim());
+        }
       }
     }
 
-    // Optional file upload
+    // Handle file upload (signatory image)
     let signatoryFilePath = "";
-    if (req.files && req.files.signatoryFile) {
+    if (req.files?.signatoryFile) {
       const file = req.files.signatoryFile;
-      const uploadPath = path.join("src", "uploads", "signatories", Date.now() + "-" + file.name);
+
+      const dir = path.join("src", "uploads", "signatories");
+      if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+
+      const uploadPath = path.join(dir, Date.now() + "-" + file.name);
       await file.mv(uploadPath);
+
       signatoryFilePath = "/" + uploadPath.replace(/\\/g, "/");
     }
 
@@ -56,38 +70,37 @@ import path from "path";
       createdBy: req.user.id,
     });
 
-    res.status(201).json({ message: "Template created", template: tpl });
+    return res.status(201).json({ message: "Template created successfully", template: tpl });
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: err.message });
+    console.error("Error in createTemplate:", err);
+    return res.status(500).json({ message: err.message });
   }
 };
-
 
 export const listTemplates = async (_req, res) => {
   try {
     const tpls = await CertificateTemplate.find().populate("createdBy", "name role");
-    res.json(tpls);
+    return res.json(tpls);
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    return res.status(500).json({ message: err.message });
   }
 };
 
 export const deleteTemplate = async (req, res) => {
   try {
     const { id } = req.params;
-    await CertificateTemplate.findByIdAndDelete(id);
-    res.json({ message: "Template deleted" });
+    const tpl = await CertificateTemplate.findByIdAndDelete(id);
+    if (!tpl) return res.status(404).json({ message: "Template not found" });
+
+    return res.json({ message: "Template deleted successfully" });
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    return res.status(500).json({ message: err.message });
   }
 };
 
 /**
  * ==========================
  * ISSUE CERTIFICATE (Teacher/University/SuperAdmin)
- * - If universityId is provided, status = pending
- * - If independent teacher, status = issued directly
  * ==========================
  */
 export const issueCertificate = async (req, res) => {
@@ -95,7 +108,7 @@ export const issueCertificate = async (req, res) => {
     const { studentId, courseId, templateId, score, filledData, universityId } = req.body;
 
     if (!studentId || !courseId || !templateId || typeof score !== "number") {
-      return res.status(400).json({ message: "studentId, courseId, templateId, score required" });
+      return res.status(400).json({ message: "studentId, courseId, templateId and score are required" });
     }
 
     if (score < 33) {
@@ -108,12 +121,12 @@ export const issueCertificate = async (req, res) => {
       CertificateTemplate.findById(templateId),
     ]);
 
-    if (!student || student.role !== "student")
-      return res.status(404).json({ message: "Student not found" });
+    if (!student || student.role !== "student") {
+      return res.status(404).json({ message: "Valid student not found" });
+    }
     if (!course) return res.status(404).json({ message: "Course not found" });
     if (!template) return res.status(404).json({ message: "Template not found" });
 
-    // unique cert id
     const certificateId = `CERT-${Date.now()}-${crypto.randomBytes(4).toString("hex").toUpperCase()}`;
 
     const issued = await IssuedCertificate.create({
@@ -128,9 +141,9 @@ export const issueCertificate = async (req, res) => {
       isValid: true,
     });
 
-    res.status(201).json({ message: "Certificate created", certificate: issued });
+    return res.status(201).json({ message: "Certificate issued successfully", certificate: issued });
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    return res.status(500).json({ message: err.message });
   }
 };
 
@@ -141,7 +154,7 @@ export const issueCertificate = async (req, res) => {
  */
 export const approveCertificate = async (req, res) => {
   try {
-    const { id } = req.params; // cert id
+    const { id } = req.params;
     const cert = await IssuedCertificate.findById(id);
 
     if (!cert) return res.status(404).json({ message: "Certificate not found" });
@@ -152,9 +165,9 @@ export const approveCertificate = async (req, res) => {
     cert.status = "issued";
     await cert.save();
 
-    res.json({ message: "Certificate approved & issued", certificate: cert });
+    return res.json({ message: "Certificate approved & issued", certificate: cert });
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    return res.status(500).json({ message: err.message });
   }
 };
 
@@ -170,17 +183,18 @@ export const verifyCertificate = async (req, res) => {
       .populate("student", "name email")
       .populate("course", "title")
       .populate("template", "name signatory");
+
     if (!cert) return res.status(404).json({ message: "Certificate not found" });
 
-    res.json({ valid: cert.isValid, status: cert.status, details: cert });
+    return res.json({ valid: cert.isValid, status: cert.status, details: cert });
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    return res.status(500).json({ message: err.message });
   }
 };
 
 /**
  * ==========================
- * STUDENT: list own certificates
+ * STUDENT: List own certificates
  * ==========================
  */
 export const myCertificates = async (req, res) => {
@@ -191,8 +205,12 @@ export const myCertificates = async (req, res) => {
     })
       .populate("course", "title")
       .populate("template", "name signatory");
-    res.json(list);
+
+    return res.json(list);
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    return res.status(500).json({ message: err.message });
   }
 };
+
+
+ 

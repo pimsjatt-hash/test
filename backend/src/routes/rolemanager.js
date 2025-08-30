@@ -7,7 +7,7 @@ import {
   updateDynamicSubAdmin,
   getDynamicSubAdmins,
   deleteDynamicSubAdmin     
-} from "../controllers/roleManagerController.js";
+} from "../controllers/roleManagercontroller.js";
 
 const router = express.Router();
 

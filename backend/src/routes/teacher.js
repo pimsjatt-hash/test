@@ -18,6 +18,7 @@ router.put("/profile", authMiddleware, allowRoles("teacher"), updateProfile);
 // --- My Courses ---
 router.get("/my-courses", authMiddleware, allowRoles("teacher"), myCourses);
 
+
 // --- Earnings ---
 router.get("/earnings", authMiddleware, allowRoles("teacher"), myEarnings);
 

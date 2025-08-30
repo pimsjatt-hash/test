@@ -19,6 +19,8 @@ import ManageSubAdmins from "./dashboard components/ManageSubAdmins";
 // import Governance from "./dashboard components/Governance";
 import UserManagement from "./UserManagement";
 import CourseDashboard from "./dashboard components/CourseManagement";
+import BlogDashboard from "./dashboard components/BlogManagerDashboard";
+import BlogManagerDashboard from "./dashboard components/BlogManagerDashboard";
 // import StudentDashboardCards from "./cards/StudentDashboardCards";
 // import UploadUniversityDoc from "./university components/UploadUniversityDoc";
 
@@ -468,7 +470,7 @@ export default function AdminDashboard () {
           )}
           {activeItem === "Blog" && (
             <div className="w-full p-2">
-              {/* <BlogManagerDashboard /> */}
+              <BlogManagerDashboard />
             </div>
           )}
           {activeItem === "Governance" && (

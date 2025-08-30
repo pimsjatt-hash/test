@@ -135,7 +135,7 @@ export const getApproveCourses = () => API.get("/courses/getApproveCourses");
 
 // ✅ Approve Course (university/superadmin)
 export const approveCourses = (courseId, action) =>
-  API.put(`/courses/approve/${courseId}`, { action });
+  API.put(`/courses/${courseId}/approve`, { action });
 
 // ✅ Add Module
 export const addModule = (courseId, data) =>
@@ -164,3 +164,64 @@ export const submitExam = (courseId, data) =>
 // ✅ Delete Course
 export const deleteCourse = (courseId) =>
   API.delete(`/courses/${courseId}`);
+
+
+//blog APIs
+ 
+
+// Create Blog (Blog Manager only)
+export const createBlog = (data) => API.post("/blogs", data);
+
+// Get All Blogs (Public)
+export const getBlogs = () => API.get("/blogs");
+
+//  Delete Blog (Blog Manager only)
+export const deleteBlog = (id) => API.delete(`/blogs/${id}`);
+
+
+
+
+ /* ====================== CERTIFICATE APIs ====================== */
+
+// ✅ Create Certificate Template (JSON only)
+export const createCertificateTemplate = (data) =>
+  API.post("/certificates/templates", data);
+
+// ✅ Get All Templates
+export const getCertificateTemplates = () =>
+  API.get("/certificates/templates");
+
+// ✅ Delete Template
+export const deleteCertificateTemplate = (id) =>
+  API.delete(`/certificates/templates/${id}`);
+
+// ✅ Issue Certificate (Teacher / University / SuperAdmin)
+export const issueCertificate = (data) =>
+  API.post("/certificates/issue", data);
+
+//✅ Approve Certificate (University)
+export const approveCertificate = (id) =>
+  API.put(`/certificates/approve/${id}`);
+
+// ✅ Verify Certificate (Public)
+export const verifyCertificate = (certificateId) =>
+  API.get(`/certificates/verify/${certificateId}`);
+
+// ✅ Get My Certificates (Student)
+export const getMyCertificates = () =>
+  API.get("/certificates/my");
+
+
+
+
+// ===================== STUDENT APIs =====================// api/api.jsx
+export const getStudentProfile = () => API.get("/student/profile");
+export const updateStudentProfile = (data) => API.put("/student/profile", data);
+export const getAvailableCourses = () => API.get("/student/courses");
+export const enrollInCourse = (courseId) => API.post("/student/enroll", { courseId });
+export const getMyCourses = () => API.get("/student/my-courses");
+export const submitReview = (data) => API.post("/student/review", data);
+
+
+
+

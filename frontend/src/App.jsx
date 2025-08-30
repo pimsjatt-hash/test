@@ -1,4 +1,4 @@
-import { Routes, Route, useLocation } from "react-router-dom";
+ import { Routes, Route, useLocation } from "react-router-dom";
 import HomePage from "./pages/HomePage";
 import Navbar from "./components/Navbar";
 import FooterBar from "./components/FooterBar";
@@ -10,12 +10,14 @@ import SignUp from "./pages/SignUp";
 import SearchBar from "./components/SearchBar";
 import WhatsappButoon from "./components/WhatsappButoon";
 import CoursePage from "./pages/CoursePage";
+import TeacherPage from "./pages/TeacherPage";
+import Studentpage from "./pages/StudentPage";
 
 export default function App() {
-  const location = useLocation(); // 👈 this gives you the current URL path
+  const location = useLocation();
 
-  const hiddenRoutesNavbar = ["/admin"]; // Hide Navbar & Footer on these
-  const hiddenRoutesSearchbar = ["/login", "/signup" ,"/contact", "/about"]; // Hide Searchbar on these
+  const hiddenRoutesNavbar = ["/admin"]; 
+  const hiddenRoutesSearchbar = ["/login", "/signup", "/contact", "/about"];
 
   return (
     <div>
@@ -33,6 +35,8 @@ export default function App() {
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/admin" element={<AdminPage />} />
+          <Route path="/teacher" element={<TeacherPage />} />
+          <Route path="/student" element={<Studentpage />} />  {/* 👈 Added */}
           <Route path="/about" element={<AboutPage />} />
           <Route path="/contact" element={<ContactPage />} />
           <Route path="/login" element={<LogIn />} />

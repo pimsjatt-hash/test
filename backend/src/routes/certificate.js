@@ -8,7 +8,7 @@ import {
   verifyCertificate,
   myCertificates,
   approveCertificate,
-} from "../controllers/certificateController.js";
+} from "../controllers/certificatecontroller.js";
 import { authMiddleware } from "../middleware/auth.js";
 import { allowRoles } from "../middleware/rbac.js";
 

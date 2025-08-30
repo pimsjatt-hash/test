@@ -1,7 +1,37 @@
-// controllers/studentController.js
-import Course from "../models/course.js";
-//import Payment from "../models/payment.js";
-import Certificate, { IssuedCertificate } from "../models/certificate.js";
+ import Course from "../models/course.js";
+import User from "../models/user.js";
+import Payment from "../models/payment.js"; // uncomment to use
+import {CertificateTemplate } from "../models/certificate.js";
+
+// ✅ Get student profile
+export const getStudentProfile = async (req, res) => {
+  try {
+    const student = await User.findById(req.user.id).select("-password");
+    if (!student || student.role !== "student") {
+      return res.status(403).json({ message: "Not a student" });
+    }
+    res.json(student);
+  } catch (err) {
+    res.status(500).json({ error: "Failed to fetch student profile" });
+  }
+};
+
+// ✅ Update student profile
+export const updateStudentProfile = async (req, res) => {
+  try {
+    const { name, email, phone, address } = req.body;
+
+    const updatedStudent = await User.findByIdAndUpdate(
+      req.user.id,
+      { name, email, phone, address },
+      { new: true }
+    ).select("-password");
+
+    res.json({ message: "Profile updated successfully", student: updatedStudent });
+  } catch (err) {
+    res.status(500).json({ error: "Failed to update student profile" });
+  }
+};
 
 // ✅ Get all available courses
 export const getCourses = async (req, res) => {

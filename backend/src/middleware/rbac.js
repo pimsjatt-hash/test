@@ -2,6 +2,7 @@
 export const allowRoles = (...allowedRoles) => {
   return (req, res, next) => {
     const user = req.user; // req.user should come from auth middleware (JWT)
+      console.log("RBAC check:", { userRole: user?.role, allowedRoles });
     if (!user) return res.status(401).json({ success: false, message: "Unauthorized" });
 
     if (!allowedRoles.includes(user.role)) {

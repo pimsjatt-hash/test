@@ -4,7 +4,7 @@ import mongoose from "mongoose";
 /**
  * Certificate Template Schema
  */
-const certificateTemplateSchema = new mongoose.Schema(
+  const certificateTemplateSchema = new mongoose.Schema(
   {
     name: { type: String, required: true },
     designUrl: { type: String, required: true }, // background design
@@ -21,7 +21,7 @@ const certificateTemplateSchema = new mongoose.Schema(
 /**
  * Issued Certificate Schema
  */
-const issuedCertificateSchema = new mongoose.Schema(
+   const issuedCertificateSchema = new mongoose.Schema(
   {
     certificateId: { type: String, unique: true, required: true },
     student: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },

@@ -1,6 +1,6 @@
 // src/components/ApproveCourse.jsx
 import React, { useState, useEffect } from "react";
-import { getCourses, approveCourse } from "../../api/api";
+import { getCourses, approveCourses } from "../../api/api";
 
 export default function ApproveCourse() {
   const [courses, setCourses] = useState([]);
@@ -15,7 +15,7 @@ export default function ApproveCourse() {
   }, []);
 
   const handleApprove = async (id, action) => {
-    await approveCourse(id, action);
+    await approveCourses(id, action);
     fetchCourses();
   };
 
@@ -28,13 +28,13 @@ export default function ApproveCourse() {
           <p>{c.description}</p>
           <div className="mt-2 flex gap-2">
             <button
-              onClick={() => handleApprove(c._id, "approve")}
+              onClick={() => handleApprove(c._id, "approved")}
               className="bg-green-500 text-white px-3 py-1 rounded"
             >
               Approve
             </button>
             <button
-              onClick={() => handleApprove(c._id, "reject")}
+              onClick={() => handleApprove(c._id, "rejected")}
               className="bg-red-500 text-white px-3 py-1 rounded"
             >
               Reject
