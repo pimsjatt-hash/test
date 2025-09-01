@@ -30,7 +30,11 @@ const courseSchema = new mongoose.Schema(
     duration: { type: String, required: true },
     targetAudience: { type: String, required: false },
     prerequisites: { type: String, required: false },
+    enrolledStudents: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" , required : false }], // array of student IDs
     tags: [{ type: String }],
+
+
+
 
     modules: [moduleSchema],
 
@@ -58,6 +62,10 @@ courseSchema.pre("save", function (next) {
   this.isApproved = this.isApprovedByUniversity && this.isApprovedBySuperAdmin;
   next();
 });
+
+
+
+
 
 const Course = mongoose.model("Course", courseSchema);
 export default Course;

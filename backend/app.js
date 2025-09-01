@@ -10,18 +10,19 @@ import cors from "cors";
 import { connectDB } from "./src/config/db.js";
 
 // routes
-import authRoutes from "./src/routes/auth.js";
-import superAdminRoutes from "./src/routes/superadmin.js";
-import courseRoutes from "./src/routes/course.js";
-import blogRoutes from "./src/routes/blog.js";
-import financeRoutes from "./src/routes/finance.js";
-import governanceRoutes from "./src/routes/governance.js";
-import certificateRoutes from "./src/routes/certificate.js";
-import couponRoutes from "./src/routes/coupon.js";
-import roleManagerRoutes from "./src/routes/rolemanager.js";
-import userRoutes from "./src/routes/user.js";
-import teacherRoutes from "./src/routes/teacher.js";
-import studentRoutes from "./src/routes/student.js";
+import authRoutes from "./src/Routes/auth.js";
+import superAdminRoutes from "./src/Routes/superAdmin.js";
+import courseRoutes from "./src/Routes/course.js";
+import blogRoutes from "./src/Routes/blog.js";
+import financeRoutes from "./src/Routes/finance.js";
+import governanceRoutes from "./src/Routes/governance.js";
+import certificateRoutes from "./src/Routes/certificate.js";
+import couponRoutes from "./src/Routes/coupon.js";
+import roleManagerRoutes from "./src/Routes/rolemanager.js";
+import userRoutes from "./src/Routes/user.js";
+import teacherRoutes from "./src/Routes/teacher.js";
+import studentRoutes from "./src/Routes/student.js";
+import { getReports } from "./src/controllers/superAdmincontroller.js";
 
 
 // load environment variables
@@ -80,6 +81,7 @@ app.get("/healthz", (req, res) => res.json({ ok: true }));
 // -------------------
 app.use("/api/auth", authRoutes); //done
 app.use("/api/superadmin", superAdminRoutes); //DONE
+console.log("✅ superAdminRoutes loaded");
 app.use("/api/courses", courseRoutes);
 app.use("/api/teacher", teacherRoutes);
 app.use("/api/blogs", blogRoutes);
@@ -90,7 +92,7 @@ app.use("/api/coupons", couponRoutes); // done
 app.use("/api/rolemanager", roleManagerRoutes);
 app.use("/api/users", userRoutes); // done
 app.use("/api/student", studentRoutes); // done
-
+app.get("/api/superadmin/reports", getReports);
 // -------------------
 // Fallback
 // -------------------

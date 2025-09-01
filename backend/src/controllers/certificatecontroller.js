@@ -6,12 +6,6 @@ import crypto from "crypto";
 import path from "path";
 import fs from "fs";
 
-
-
-
-
-
-
 /**
  * ==========================
  * TEMPLATE MANAGEMENT (SuperAdmin Only)
@@ -19,14 +13,11 @@ import fs from "fs";
  */
 export const createTemplate = async (req, res) => {
   try {
-    const name = req.body?.name?.trim();
     const signatoryName = req.body?.signatoryName?.trim();
 
-    if (!name || !signatoryName) {
-      return res.status(400).json({ message: "Template name and signatory name are required" });
+    if (!signatoryName) {
+      return res.status(400).json({ message: "Signatory name is required" });
     }
-
-    const designUrl = req.body?.designUrl?.trim() || "";
 
     // Handle fields
     let fields = ["studentName", "courseId", "score"];
@@ -45,29 +36,23 @@ export const createTemplate = async (req, res) => {
       }
     }
 
-    // Handle file upload (signatory image)
+    // Handle optional signatory file
     let signatoryFilePath = "";
     if (req.files?.signatoryFile) {
       const file = req.files.signatoryFile;
-
       const dir = path.join("src", "uploads", "signatories");
       if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
-
       const uploadPath = path.join(dir, Date.now() + "-" + file.name);
       await file.mv(uploadPath);
-
       signatoryFilePath = "/" + uploadPath.replace(/\\/g, "/");
     }
 
     const tpl = await CertificateTemplate.create({
-      name,
-      designUrl,
       signatory: {
         name: signatoryName,
         imageUrl: signatoryFilePath,
       },
       fields,
-      createdBy: req.user.id,
     });
 
     return res.status(201).json({ message: "Template created successfully", template: tpl });
@@ -79,7 +64,7 @@ export const createTemplate = async (req, res) => {
 
 export const listTemplates = async (_req, res) => {
   try {
-    const tpls = await CertificateTemplate.find().populate("createdBy", "name role");
+    const tpls = await CertificateTemplate.find();
     return res.json(tpls);
   } catch (err) {
     return res.status(500).json({ message: err.message });
@@ -91,7 +76,6 @@ export const deleteTemplate = async (req, res) => {
     const { id } = req.params;
     const tpl = await CertificateTemplate.findByIdAndDelete(id);
     if (!tpl) return res.status(404).json({ message: "Template not found" });
-
     return res.json({ message: "Template deleted successfully" });
   } catch (err) {
     return res.status(500).json({ message: err.message });
@@ -182,7 +166,7 @@ export const verifyCertificate = async (req, res) => {
     const cert = await IssuedCertificate.findOne({ certificateId })
       .populate("student", "name email")
       .populate("course", "title")
-      .populate("template", "name signatory");
+      .populate("template", "signatory fields");
 
     if (!cert) return res.status(404).json({ message: "Certificate not found" });
 
@@ -204,13 +188,10 @@ export const myCertificates = async (req, res) => {
       status: "issued",
     })
       .populate("course", "title")
-      .populate("template", "name signatory");
+      .populate("template", "signatory fields");
 
     return res.json(list);
   } catch (err) {
     return res.status(500).json({ message: err.message });
   }
 };
-
-
- 

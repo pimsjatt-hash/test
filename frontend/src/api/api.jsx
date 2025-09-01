@@ -225,3 +225,12 @@ export const submitReview = (data) => API.post("/student/review", data);
 
 
 
+// ---------------- SUPERADMIN REPORTS API ----------------
+
+
+export const getReports = () => API.get("/superadmin/reports");
+
+
+
+
+

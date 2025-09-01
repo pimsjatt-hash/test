@@ -25,5 +25,7 @@ router.get("/my-courses", authMiddleware, myCourses);
 
 // Reviews
 router.post("/review", authMiddleware, reviewCourse);
+console.log("✅ studentRoutes loaded");
+
 
 export default router;

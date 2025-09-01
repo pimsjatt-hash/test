@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Home,  Users,  GraduationCap,  User,  Building2,  UserPlus,  Shield,  BookOpen,  Bell,  DollarSign,  ChevronDown,  Sun,  Globe,  UserCheck,  UserX,  Plus, Rss, Landmark,} from "lucide-react";
+import { Home, Users, GraduationCap, User, Building2, UserPlus, Shield, BookOpen, Bell, DollarSign, ChevronDown, Sun, Globe, UserCheck, UserX, Plus, Rss, Landmark, } from "lucide-react";
 import SearchBar from "./SearchBar";
 import DashboardCard from "./DashboardCard";
 // import UserManagementCardDesign from "./UserManagementCardDesign";
@@ -23,6 +23,11 @@ import BlogDashboard from "./dashboard components/BlogManagerDashboard";
 import BlogManagerDashboard from "./dashboard components/BlogManagerDashboard";
 // import StudentDashboardCards from "./cards/StudentDashboardCards";
 // import UploadUniversityDoc from "./university components/UploadUniversityDoc";
+import CertificateManagerDashboard from "../components/dashboard components/CertificateManagement.jsx";
+
+import ReportsDashboard from "./dashboard components/ReportsDashboard.jsx";
+
+
 
 // Sidebar menu structure
 const menuItems = [
@@ -59,82 +64,82 @@ const card = [
     subtitle: "Total Users",
     data: "12",
     icon: Users,
-    colour : "red",
+    colour: "red",
   },
   {
     title: "3,247",
     subtitle: "Total Courses",
     data: "8",
     icon: BookOpen,
-    colour : "green",
+    colour: "green",
   },
   {
     title: "$12.5M",
     subtitle: "Platrom Revenue",
     data: "15",
     icon: DollarSign,
-    colour : "orange",
+    colour: "orange",
   },
   {
     title: "8,945",
     subtitle: "Active Sessions",
     data: "5",
     icon: Globe,
-    colour : "blue",
+    colour: "blue",
   },
 ]
 
 const alerts = [
   {
     title: "High Server Load",
-    subtitle : "Server CPU is at 85%",
+    subtitle: "Server CPU is at 85%",
     data: "5 minutes",
-    btn_name:"Warning",
+    btn_name: "Warning",
     bgcolour: "yellow",
     ntmcolour: "yellow",
 
   },
   {
     title: "New Feature Deployed",
-    subtitle : "Course analytics v2.0 is now live",
+    subtitle: "Course analytics v2.0 is now live",
     data: "2 hours ago",
-    btn_name:"info",
+    btn_name: "info",
     bgcolour: "yellow",
     ntmcolour: "yellow",
 
   },
   {
     title: "Payment Gateway Issue",
-    subtitle : "Some transactions are failing",
+    subtitle: "Some transactions are failing",
     data: "30 minutes ago",
-    btn_name:"error",
+    btn_name: "error",
     bgcolour: "yellow",
     ntmcolour: "yellow",
 
   },
   {
     title: "High Server Load",
-    subtitle : "Server CPU is at 85%",
+    subtitle: "Server CPU is at 85%",
     data: "5 minutes",
-    btn_name:"Warning",
+    btn_name: "Warning",
     bgcolour: "yellow",
     ntmcolour: "yellow",
 
   },
   {
     title: "New Feature Deployed",
-    subtitle : "Course analytics v2.0 is now live",
+    subtitle: "Course analytics v2.0 is now live",
     data: "2 hours ago",
-    btn_name:"info",
+    btn_name: "info",
     bgcolour: "yellow",
     ntmcolour: "yellow",
 
   },
   {
     title: "Payment Gateway Issue",
-    subtitle : "Some transactions are failing",
+    subtitle: "Some transactions are failing",
     data: "30 minutes ago",
-    btn_name:"error",
+    btn_name: "error",
     bgcolour: "yellow",
     ntmcolour: "yellow",
 
@@ -143,28 +148,28 @@ const alerts = [
 
 const studentCards = [
   {
-    title : "Total Students",
-    icon : Users,
-    subTitle : "+12% from last month",
-    value : "2,380",
+    title: "Total Students",
+    icon: Users,
+    subTitle: "+12% from last month",
+    value: "2,380",
   },
   {
-    title : "Active",
-    icon : UserCheck,
-    subTitle : "90.5% active rate",
-    value : "2,156",
+    title: "Active",
+    icon: UserCheck,
+    subTitle: "90.5% active rate",
+    value: "2,156",
   },
   {
-    title : "Pending",
-    icon : UserX,
-    subTitle : "Awaiting approval",
-    value : "124",
+    title: "Pending",
+    icon: UserX,
+    subTitle: "Awaiting approval",
+    value: "124",
   },
   {
-    title : "This Month",
-    icon : Plus,
-    subTitle : "New registrations",
-    value : "156",
+    title: "This Month",
+    icon: Plus,
+    subTitle: "New registrations",
+    value: "156",
   },
 ]
 
@@ -243,7 +248,7 @@ const userLists = [
   }
 ]
 
-export default function AdminDashboard () {
+export default function AdminDashboard() {
   // Track expanded sections
   const [openSections, setOpenSections] = useState({});
   // Track active menu item
@@ -264,7 +269,7 @@ export default function AdminDashboard () {
       {/* Sidebar */}
       <div className="w-64 bg-white border-r p-4 overflow-y-auto">
         <div className="text-2xl font-bold border-b-2 p-1 border-gray-600 mb-8">
-        <span>Larnik</span>
+          <span>Larnik</span>
         </div>
         {menuItems.map((item) => (
           <div key={item.title}>
@@ -277,9 +282,8 @@ export default function AdminDashboard () {
                   handleItemClick(item);
                 }
               }}
-              className={`flex items-center gap-2 p-2 rounded-md cursor-pointer hover:bg-gray-100 ${
-                activeItem === item.title ? "bg-blue-50 text-blue-600" : "text-gray-700"
-              }`}
+              className={`flex items-center gap-2 p-2 rounded-md cursor-pointer hover:bg-gray-100 ${activeItem === item.title ? "bg-blue-50 text-blue-600" : "text-gray-700"
+                }`}
             >
               {item.icon}
               <span className="flex-1">{item.title}</span>
@@ -295,9 +299,8 @@ export default function AdminDashboard () {
                   <div
                     key={child.title}
                     onClick={() => handleItemClick(child)}
-                    className={`flex items-center gap-2 p-2 rounded-md cursor-pointer hover:bg-gray-100 ${
-                      activeItem === child.title ? "bg-blue-50 text-blue-600" : "text-gray-600"
-                    }`}
+                    className={`flex items-center gap-2 p-2 rounded-md cursor-pointer hover:bg-gray-100 ${activeItem === child.title ? "bg-blue-50 text-blue-600" : "text-gray-600"
+                      }`}
                   >
                     {child.icon}
                     {child.title}
@@ -312,20 +315,20 @@ export default function AdminDashboard () {
       {/* Dynamic Content Area */}
       <div className="flex flex-col overflow-y-auto  w-full items-center">
         {/* dynamic top bar  */}
-      <div className="bg-white w-full h-16 flex items-center justify-between px-7">
-            <div>
-              <SearchBar />
-            </div>
-            <div className="flex gap-7 items-center">
-              <Sun className=" hover:bg-green-600 w-12 h-12 rounded-xl p-3" size={32}/>
-              <Bell className=" hover:bg-green-600 w-12 h-12 rounded-xl p-3" size={32}/>
-              <div className="flex gap-1 hover:bg-green-600 px-2 py-1 rounded-xl">
-                <User />
-                <span>Super Admin</span>
-                <ChevronDown />
-              </div>
+        <div className="bg-white w-full h-16 flex items-center justify-between px-7">
+          <div>
+            <SearchBar />
+          </div>
+          <div className="flex gap-7 items-center">
+            <Sun className=" hover:bg-green-600 w-12 h-12 rounded-xl p-3" size={32} />
+            <Bell className=" hover:bg-green-600 w-12 h-12 rounded-xl p-3" size={32} />
+            <div className="flex gap-1 hover:bg-green-600 px-2 py-1 rounded-xl">
+              <User />
+              <span>Super Admin</span>
+              <ChevronDown />
             </div>
           </div>
+        </div>
         {/* dynamic top bar  */}
 
 
@@ -333,86 +336,86 @@ export default function AdminDashboard () {
         {/* dynamic content area with nav  */}
         {/*debug colour */}
         <div className="w-full flex justify-center items-start bg-white mt-1 p-3 overflow-y-auto">
-            {activeItem === "Dashboard" && (
+          {activeItem === "Dashboard" && (
             <div className="w-full flex flex-col gap-1 items-center">
 
 
               <div className="w-full flex items-center justify-center mt-2">
                 <div className="bg-red-600 h-32 rounded-xl w-[98%] flex flex-col items-start justify-center p-5 text-white">
-                 <span className="text-2xl font-bold">Admin Control Center 🛡️</span>
-                 <span>Monitor and manage the entire platform</span>
+                  <span className="text-2xl font-bold">Admin Control Center 🛡️</span>
+                  <span>Monitor and manage the entire platform</span>
                 </div>
               </div>
-                {/* quick links  */}
-                <span className="font-bold text-start w-full pl-4 mt-2 text-xl shadow-2xl">Quick Links</span>
-  
-                   {menuItems.map((item) => (
-            <div key={item.title} className="w-full">  
-              {/* Submenu items */}
-              {item.children && (
-                <div className="flex"> {item.children.map((child) => (
-                    <div key={child.title} onClick={() => handleItemClick(child)} className="flex items-center m-3 rounded-md cursor-pointer hover:bg-gray-100"
-                    >
-                    <div className="h-32 w-32 shadow-2xl rounded-xl bg-white flex items-center justify-center flex-col" >
-                     {child.icon}
-                     {child.title}
-                   </div>
+              {/* quick links  */}
+              <span className="font-bold text-start w-full pl-4 mt-2 text-xl shadow-2xl">Quick Links</span>
+
+              {menuItems.map((item) => (
+                <div key={item.title} className="w-full">
+                  {/* Submenu items */}
+                  {item.children && (
+                    <div className="flex"> {item.children.map((child) => (
+                      <div key={child.title} onClick={() => handleItemClick(child)} className="flex items-center m-3 rounded-md cursor-pointer hover:bg-gray-100"
+                      >
+                        <div className="h-32 w-32 shadow-2xl rounded-xl bg-white flex items-center justify-center flex-col" >
+                          {child.icon}
+                          {child.title}
+                        </div>
+                      </div>
+                    ))}
                     </div>
-                  ))}
+                  )}
                 </div>
-              )}
-            </div>
-          ))}
-  
-                {/* quick links  */}
+              ))}
+
+              {/* quick links  */}
 
               <div className="flex  w-full px-5 gap-2 mt-2">
                 {card.map((card, index) => (
-                  <DashboardCard key={index} title={card.title} icon={card.icon} data={card.data} colour={card.colour}/>
-                 ))}
+                  <DashboardCard key={index} title={card.title} icon={card.icon} data={card.data} colour={card.colour} />
+                ))}
               </div>
 
-                  <div className="w-full">
-                    <CouponManager />
-                  </div>
+              <div className="w-full">
+                <CouponManager />
+              </div>
 
             </div>
           )}
-        
+
           {activeItem === "Students" && (
-              <div className="flex w-full flex-col">
-                <div className="flex flex-col gap-5 w-[98%]  bg-white p-5 rounded-2xl shadow-2xl">
-                  <UserManagement role="Student"/>
-              </div> 
+            <div className="flex w-full flex-col">
+              <div className="flex flex-col gap-5 w-[98%]  bg-white p-5 rounded-2xl shadow-2xl">
+                <UserManagement role="Student" />
               </div>
+            </div>
           )}
-        
+
           {activeItem === "Teachers" && (
             <>
-            <div className="w-full">
-            <UserManagement role="Teachers"/>
-            </div>
+              <div className="w-full">
+                <UserManagement role="teacher" />
+              </div>
             </>
           )}
-        
+
           {activeItem === "University" && (
             <div className="w-full">
-              <UserManagement role="university"/>
+              <UserManagement role="university" />
             </div>
           )}
-        
+
           {activeItem === "Referral Partners" && (
             <div className="w-full">
-              <UserManagement role="referral"/>
+              <UserManagement role="referral" />
             </div>
           )}
-        
+
           {activeItem === "Sub-Admins" && (
             <div className="w-full">
-              <UserManagement role="subadmin"/> 
+              <UserManagement role="subadmin" />
             </div>
           )}
-        
+
           {activeItem === "Course Management" && (
             <div className="flex w-full flex-col">
               {/* <h1 className="text-2xl font-bold mb-4">Course Management</h1>
@@ -421,21 +424,21 @@ export default function AdminDashboard () {
               <CourseDashboard />
             </div>
           )}
-        
+
           {activeItem === "Course Monitoring" && (
             <div>
               <h1 className="text-2xl font-bold mb-4">Course Monitoring</h1>
               <p>Monitor course progress and completion rates.</p>
             </div>
           )}
-        
+
           {activeItem === "Content Monitoring" && (
             <div>
               <h1 className="text-2xl font-bold mb-4">Content Monitoring</h1>
               <p>Review and approve course content.</p>
             </div>
           )}
-        
+
           {activeItem === "Notifications" && (
             <div className="flex w-full flex-col">
               {/* <h1 className="text-2xl font-bold mb-4">Notifications</h1>
@@ -443,25 +446,28 @@ export default function AdminDashboard () {
               {/* <NotificationManagement /> */}
             </div>
           )}
-        
+
           {activeItem === "Finance & Settlement" && (
             <div className="w-full p-2">
-              
+
               {/* <SettlementTable /> */}
             </div>
           )}
-        
+
           {activeItem === "Certificate" && (
             <div className="w-full p-2">
-              {/* <CertificateUpload /> */}
+              <CertificateManagerDashboard />  {/* 👈 use the correct component */}
             </div>
           )}
-        
+
+
           {activeItem === "Report" && (
             <div className="w-full p-2">
-              {/* <ExportReports /> */}
+              <ReportsDashboard />
             </div>
           )}
+
+ 
           {activeItem === "Add User" && (
             <div className="w-full p-2">
               {/* <UserRoleAccess /> */}
@@ -489,11 +495,11 @@ export default function AdminDashboard () {
 
       </div>
 
-                
+
 
 
     </div>
   )
-  
+
 }
 

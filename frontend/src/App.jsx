@@ -12,6 +12,7 @@ import WhatsappButoon from "./components/WhatsappButoon";
 import CoursePage from "./pages/CoursePage";
 import TeacherPage from "./pages/TeacherPage";
 import Studentpage from "./pages/StudentPage";
+ 
 
 export default function App() {
   const location = useLocation();
@@ -42,6 +43,7 @@ export default function App() {
           <Route path="/login" element={<LogIn />} />
           <Route path="/signup" element={<SignUp />} />
           <Route path="/courses" element={<CoursePage />} />
+         
           <Route path="*" element={<h1>404 Not Found</h1>} />
         </Routes>
       </div>

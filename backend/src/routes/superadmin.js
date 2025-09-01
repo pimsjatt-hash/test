@@ -9,8 +9,8 @@ import {
   approveCourse,
   approveUniversity,
   deleteUser, updateSubRole
+  , getReports
 } from "../controllers/superAdmincontroller.js";
-
 const router = express.Router();
 
 // 1️⃣ Create fixed sub-admin (blog_manager, finance_manager, governance, role_manager)
@@ -20,6 +20,14 @@ router.post(
   allowRoles("superadmin"),
   requireApproved(),
   createManager
+);
+
+// GET /api/superadmin/reports
+router.get(
+  "/reports",
+  authMiddleware,           // optional: only if you want auth
+  allowRoles("superadmin"), // optional: only superadmin can access
+  getReports
 );
 
 // 2️⃣ Fetch users by role
@@ -55,6 +63,17 @@ router.patch(
   requireApproved(),
   approveUniversity
 );
+
+
+
+// inside router.get("/reports")
+// router.get("/reports", (req, res, next) => {
+//   console.log("📊 Reports route triggered");
+//   next();
+// }, authMiddleware, allowRoles("superadmin"), getReports);
+ 
+
+
 
 router.delete("/delete-user/:id", deleteUser);       // DELETE /api/users/:id
 router.put("/:id/role", updateSubRole); // PATCH /api/users/:id/role

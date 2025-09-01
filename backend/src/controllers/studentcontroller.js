@@ -44,40 +44,53 @@ export const getCourses = async (req, res) => {
 };
 
 // ✅ Enroll in a course (purchase)
-export const enrollCourse = async (req, res) => {
+ export const enrollCourse = async (req, res) => {
+  console.log("EnrollCourse called");
+  
   try {
     const { courseId } = req.body;
-    const studentId = req.user.id;
+    const studentId = req.user?.id;
+
+    console.log("Enroll request:", { courseId, studentId });
 
     // check course exists
     const course = await Course.findById(courseId);
     if (!course) return res.status(404).json({ error: "Course not found" });
 
-    // create payment record (actual Razorpay integration commented)
-    const payment = new Payment({
-      student: studentId,
-      course: courseId,
-      amount: course.price || 0,
-      status: "pending",
-    });
-    await payment.save();
+    // Option 1: Add student to course.enrolledStudents array (if schema has it)
+    if (!course.enrolledStudents) course.enrolledStudents = [];
+    if (!course.enrolledStudents.includes(studentId)) {
+      course.enrolledStudents.push(studentId);
+      await course.save();
+    }
 
-    res.json({ message: "Enrollment initiated", paymentId: payment._id });
+    console.log("🎯 Enroll course hit", req.body);
+
+
+    res.json({ message: "Student enrolled successfully", courseId });
   } catch (err) {
-    res.status(500).json({ error: "Failed to enroll in course" });
+    console.error("❌ EnrollCourse Error:", err);
+    res
+      .status(500)
+      .json({ error: "Failed to enroll in course", details: err.message });
   }
 };
+
 
 // ✅ Get my enrolled courses
-export const myCourses = async (req, res) => {
+  export const myCourses = async (req, res) => {
   try {
-    const studentId = req.user.id;
-    const payments = await Payment.find({ student: studentId, status: "success" }).populate("course");
-    res.json(payments.map(p => p.course));
+    const studentId = req.user._id; // or req.user.id
+    const courses = await Course.find({ enrolledStudents: studentId })
+      .populate("createdBy", "name email")
+      .populate("enrolledStudents", "name email");
+
+    res.json(courses);
   } catch (err) {
-    res.status(500).json({ error: "Failed to fetch enrolled courses" });
+    res.status(500).json({ error: "Failed to fetch courses" });
   }
 };
+
 
 // ✅ Submit review for a course
 export const reviewCourse = async (req, res) => {

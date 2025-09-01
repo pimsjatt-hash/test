@@ -6,13 +6,13 @@ import mongoose from "mongoose";
  */
   const certificateTemplateSchema = new mongoose.Schema(
   {
-    name: { type: String, required: true },
-    designUrl: { type: String, required: true }, // background design
+   // name: { type: String, required: true },
+    //designUrl: { type: String, required: true }, // background design
     signatory: {
       name: { type: String, required: true },
       imageUrl: { type: String }, // stored in /uploads/signatories
     },
-    createdBy: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
+    //createdBy: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
     fields: [{ type: String }],
   },
   { timestamps: true }

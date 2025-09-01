@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from "react";
 import { getCertificateTemplates, deleteCertificateTemplate } from "../../api/api";
 
-export default function CertificateTemplateList({ refreshKey, onDelete }) {
+export default function CertificateTemplates({ refreshKey, onDelete }) {
   const [templates, setTemplates] = useState([]);
 
   useEffect(() => {
