@@ -92,21 +92,31 @@ export const getCourses = async (req, res) => {
 };
 
 
-// ✅ Submit review for a course
-export const reviewCourse = async (req, res) => {
+// review course
+
+ export const reviewCourse = async (req, res) => {
   try {
-    const { courseId, review } = req.body;
+    const { courseId, review, rating } = req.body;
     const studentId = req.user.id;
+
+    if (!review || review.trim() === "") {
+      return res.status(400).json({ error: "Review text is required" });
+    }
 
     const course = await Course.findById(courseId);
     if (!course) return res.status(404).json({ error: "Course not found" });
 
-    if (!course.reviews) course.reviews = [];
-    course.reviews.push({ student: studentId, review });
+    // Ensure student is enrolled
+    if (!course.enrolledStudents.includes(studentId)) {
+      return res.status(403).json({ error: "You must be enrolled to review" });
+    }
+
+    course.reviews.push({ student: studentId, review: review.trim(), rating });
     await course.save();
 
-    res.json({ message: "Review submitted" });
+    res.json({ message: "Review submitted", reviews: course.reviews });
   } catch (err) {
-    res.status(500).json({ error: "Failed to submit review" });
+    console.error(err);
+    res.status(500).json({ error: "Failed to submit review", details: err.message });
   }
 };

@@ -25,6 +25,7 @@ import studentRoutes from "./src/Routes/student.js";
 import { getReports } from "./src/controllers/superAdmincontroller.js";
 
 
+
 // load environment variables
 dotenv.config();
 

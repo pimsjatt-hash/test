@@ -211,6 +211,10 @@ export const verifyCertificate = (certificateId) =>
 export const getMyCertificates = () =>
   API.get("/certificates/my");
 
+// Student download certificate
+export const downloadCertificate = (certificateId) =>
+  API.get(`/certificates/download/${certificateId}`, { responseType: "blob" });
+
 
 
 

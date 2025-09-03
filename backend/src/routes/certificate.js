@@ -8,7 +8,7 @@ import {
   verifyCertificate,
   myCertificates,
   approveCertificate,
-} from "../controllers/certificatecontroller.js";
+} from "../controllers/certificateController.js"; // fixed capitalization
 import { authMiddleware } from "../middleware/auth.js";
 import { allowRoles } from "../middleware/rbac.js";
 
@@ -23,8 +23,18 @@ router.post(
   allowRoles("superadmin"),
   createTemplate
 );
-router.get("/templates", authMiddleware, allowRoles("superadmin"), listTemplates);
-router.delete("/templates/:id", authMiddleware, allowRoles("superadmin"), deleteTemplate);
+router.get(
+  "/templates",
+  authMiddleware,
+  allowRoles("superadmin"),
+  listTemplates
+);
+router.delete(
+  "/templates/:id",
+  authMiddleware,
+  allowRoles("superadmin"),
+  deleteTemplate
+);
 
 /**
  * Issue Certificate (SuperAdmin, Teacher, University)
@@ -37,7 +47,7 @@ router.post(
 );
 
 /**
- * University Approve
+ * University Approve Certificate
  */
 router.patch(
   "/approve/:id",
@@ -47,12 +57,17 @@ router.patch(
 );
 
 /**
- * Student Endpoints
+ * Student: List own certificates
  */
-router.get("/mine", authMiddleware, allowRoles("student"), myCertificates);
+router.get(
+  "/mine",
+  authMiddleware,
+  allowRoles("student"),
+  myCertificates
+);
 
 /**
- * Public Verify
+ * Public: Verify Certificate
  */
 router.get("/verify/:certificateId", verifyCertificate);
 
