@@ -10,7 +10,7 @@ import {
   approveUniversity,
   deleteUser, updateSubRole
   , getReports
-} from "../controllers/superAdmincontroller.js";
+} from "../controllers/superAdminController.js";
 const router = express.Router();
 
 // 1️⃣ Create fixed sub-admin (blog_manager, finance_manager, governance, role_manager)

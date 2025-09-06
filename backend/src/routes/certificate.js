@@ -1,59 +1,96 @@
- // src/routes/certificate.js
-import express from "express";
-import {
-  createTemplate,
-  listTemplates,
-  deleteTemplate,
-  issueCertificate,
-  verifyCertificate,
-  myCertificates,
-  approveCertificate,
-} from "../controllers/certificatecontroller.js";
-import { authMiddleware } from "../middleware/auth.js";
-import { allowRoles } from "../middleware/rbac.js";
-
+ import express from "express";
 const router = express.Router();
+import {
+  // createTemplate,
+  // listTemplates,
+  // updateTemplate,
+  // deleteTemplate,
+  issueCertificate,
+  getCertificatesByStudent,
+  validateCertificate,
+  approveCertificate,
+  uploadSignature,
+  downloadCertificate,
+} from "../../src/controllers/certificateController.js";
+
+import { allowRoles } from "../middleware/rbac.js";
+import { uploadSign } from "../utils/upload.js";
+import { authMiddleware } from "../middleware/auth.js";
+import { IssuedCertificate } from "../models/certificate.js";
 
 /**
- * Templates (Super Admin only)
+ * ==========================
+ * TEMPLATE ROUTES
+ * ==========================
+ */
+// router.post(
+//   "/templates",
+//   authMiddleware,
+//   allowRoles("superadmin", "university"),
+//   createTemplate
+// );
+
+// router.get("/templates", authMiddleware, allowRoles("superadmin","teacher" ,"university"), listTemplates);
+// router.put("/templates/:id", authMiddleware, allowRoles("superadmin"), updateTemplate);
+// router.delete("/templates/:id", authMiddleware, allowRoles("superadmin"), deleteTemplate);
+
+/**
+ * ==========================
+ * UPLOAD SIGNATURES
+ * ==========================
  */
 router.post(
-  "/templates",
+  "/signatures",
   authMiddleware,
-  allowRoles("superadmin"),
-  createTemplate
+  allowRoles("superadmin", "university"),
+  uploadSign.single("signature"),
+  uploadSignature
 );
-router.get("/templates", authMiddleware, allowRoles("superadmin"), listTemplates);
-router.delete("/templates/:id", authMiddleware, allowRoles("superadmin"), deleteTemplate);
 
 /**
- * Issue Certificate (SuperAdmin, Teacher, University)
+ * ==========================
+ * ISSUE CERTIFICATES
+ * ==========================
+ * - Superadmin → auto issues
+ * - Teacher / University → goes for approval
  */
 router.post(
   "/issue",
   authMiddleware,
-  allowRoles("superadmin", "teacher", "university"),
+  allowRoles("teacher", "university"),
   issueCertificate
 );
 
 /**
- * University Approve
+ * ==========================
+ * APPROVE CERTIFICATES
+ * ==========================
+ * - Only superadmin can approve
  */
 router.patch(
   "/approve/:id",
   authMiddleware,
-  allowRoles("university"),
+  allowRoles("superadmin"),
   approveCertificate
 );
 
 /**
- * Student Endpoints
+ * ==========================
+ * STUDENT VIEW CERTIFICATES
+ * ==========================
  */
-router.get("/mine", authMiddleware, allowRoles("student"), myCertificates);
+router.get("/my", authMiddleware, getCertificatesByStudent);
+
+
+router.get("/my/download/:id", authMiddleware, downloadCertificate);
+
+
 
 /**
- * Public Verify
+ * ==========================
+ * VALIDATE CERTIFICATES (Public)
+ * ==========================
  */
-router.get("/verify/:certificateId", verifyCertificate);
+router.get("/validate/:uniqueId", validateCertificate);
 
 export default router;

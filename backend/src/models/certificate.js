@@ -1,41 +1,55 @@
- // src/models/certificate.js
-import mongoose from "mongoose";
+ import mongoose from "mongoose";
 
 /**
  * Certificate Template Schema
  */
-  const certificateTemplateSchema = new mongoose.Schema(
-  {
-   // name: { type: String, required: true },
-    //designUrl: { type: String, required: true }, // background design
-    signatory: {
-      name: { type: String, required: true },
-      imageUrl: { type: String }, // stored in /uploads/signatories
-    },
-    //createdBy: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
-    fields: [{ type: String }],
-  },
-  { timestamps: true }
-);
+// const CertificateTemplateSchema = new mongoose.Schema({
+//   name: { type: String, required: true },
+//   ownerId: { type: mongoose.Schema.Types.ObjectId, ref: "User" }, // creator (SuperAdmin / University)
+//   logoUrl: { type: String },        // optional logo path or CDN
+//   backgroundUrl: { type: String },  // optional background image
+//   signatories: [
+//     {
+//       name: { type: String, required: true },
+//       title: { type: String, default: "" },
+//       signatureUrl: { type: String, default: "" }
+//     }
+//   ],
+//   fields: [
+//     {
+//       name: { type: String, required: true },
+//       rolesAllowed: [
+//         {
+//           type: String,
+//           enum: ["superadmin", "teacher", "university"],
+//           required: true
+//         }
+//       ]
+//     }
+//   ],
+//   layout: { type: Object, default: {} }, // positions, fonts, colors
+//   createdAt: { type: Date, default: Date.now },
+//   updatedAt: { type: Date, default: Date.now }
+// });
 
 /**
  * Issued Certificate Schema
  */
-   const issuedCertificateSchema = new mongoose.Schema(
-  {
-    certificateId: { type: String, unique: true, required: true },
-    student: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
-    course: { type: mongoose.Schema.Types.ObjectId, ref: "Course", required: true },
-    template: { type: mongoose.Schema.Types.ObjectId, ref: "CertificateTemplate", required: true },
-    university: { type: mongoose.Schema.Types.ObjectId, ref: "User" }, // optional
-    qrCodeUrl: { type: String, default: "" },
-    score: { type: Number, required: true },
-    filledData: { type: Object },
-    status: { type: String, enum: ["pending", "issued"], default: "issued" },
-    isValid: { type: Boolean, default: true },
-  },
-  { timestamps: true }
-);
+const IssuedCertificateSchema = new mongoose.Schema({
+  certificateId: { type: String, required: true, unique: true }, // <-- add this
+  studentEmail: { type: String, required: true },
+  studentName: { type: String, required: true },
+   courseuniqueId: { type: String, required: true },  // manually entered by teacher
+  courseTitle: { type: String, required: true },
+  templateId: { type: mongoose.Schema.Types.ObjectId, ref: "CertificateTemplate" },
+  score: { type: Number, required: true },
+  issuedAt: { type: Date, default: Date.now },
+  pdfUrl: { type: String, default: "" },
+  qrUrl: { type: String, default: "" },
+  validated: { type: Boolean, default: false },
+  status: { type: String, enum: ["pending", "approved", "rejected"], default: "pending" },
+});
 
-export const CertificateTemplate = mongoose.model("CertificateTemplate", certificateTemplateSchema);
-export const IssuedCertificate = mongoose.model("IssuedCertificate", issuedCertificateSchema);
+
+// export const CertificateTemplate = mongoose.model("CertificateTemplate", CertificateTemplateSchema);
+export const IssuedCertificate = mongoose.model("IssuedCertificate", IssuedCertificateSchema);

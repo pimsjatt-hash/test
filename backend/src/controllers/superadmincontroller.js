@@ -91,30 +91,34 @@ export const approveUser = async (req, res) => {
 };
 
 // -------------------- APPROVE / REJECT COURSES --------------------
+// // src/controllers/courseController.js
+
 export const approveCourse = async (req, res) => {
   try {
     const { id } = req.params;
-    const { status, note } = req.body;
+    const { status, note } = req.body; // status: "approved" or "rejected"
 
+    // ⚡ Fetch course without populating createdBy
     const course = await Course.findById(id);
-    if (!course) return res.status(404).json({ success: false, message: "Course not found" });
+    if (!course) return res.status(404).json({ message: "Course not found" });
 
-    course.status = status;
-    await course.save();
-
-    if (ApprovalLog) {
-      await ApprovalLog.create({
-        entity: "Course",
-        entityId: id,
-        approvedBy: req.user.id,
-        status,
-        note: note || "",
-      });
+    if (status === "approved") {
+      course.isApprovedBySuperAdmin = true;
+      course.rejectionNote = null;
+    } else if (status === "rejected") {
+      course.isApprovedBySuperAdmin = false;
+      course.rejectionNote = note || "Rejected by superadmin";
+    } else {
+      return res.status(400).json({ message: "Invalid status. Use 'approved' or 'rejected'." });
     }
 
-    res.json({ success: true, message: `Course ${status} successfully`, course });
+    // Pre-save hook will automatically update isApproved
+    await course.save(); // ⚡ No populate, so no validation error
+
+    res.json({ message: `Course ${status} successfully`, course });
   } catch (error) {
-    res.status(500).json({ success: false, message: error.message });
+    console.error("ApproveCourse Error:", error);
+    res.status(500).json({ message: error.message });
   }
 };
 

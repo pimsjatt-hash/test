@@ -369,8 +369,7 @@
 //     </div>
 //   );
 // }
-
-
+ 
 import React, { useState, useEffect } from "react";
 import {
   Upload,
@@ -388,6 +387,9 @@ import CourseList from "./course management/CourseList";
 import ApproveCourse from "./course management/ApproveCourse";
 import ManageModules from "./course management/ManageModules";
 import SubmitExam from "./course management/SubmitExam";
+
+// ✅ Import only TeacherCertificates for issuing certificates
+import TeacherCertificates from "../pages/TeacherCertificatepage";
 
 export default function TeacherDashboard() {
   const [activeTab, setActiveTab] = useState("profile");
@@ -539,11 +541,14 @@ export default function TeacherDashboard() {
       formData.append("title", file.name);
       formData.append("order", 1);
 
-      const res = await fetch(`/api/courses/${courseId}/module/${moduleId}/video`, {
-        method: "POST",
-        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-        body: formData,
-      });
+      const res = await fetch(
+        `/api/courses/${courseId}/module/${moduleId}/video`,
+        {
+          method: "POST",
+          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+          body: formData,
+        }
+      );
       const data = await res.json();
 
       if (res.ok) {
@@ -562,11 +567,14 @@ export default function TeacherDashboard() {
       const formData = new FormData();
       formData.append("notes", file);
 
-      const res = await fetch(`/api/courses/${courseId}/module/${moduleId}/notes`, {
-        method: "POST",
-        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-        body: formData,
-      });
+      const res = await fetch(
+        `/api/courses/${courseId}/module/${moduleId}/notes`,
+        {
+          method: "POST",
+          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+          body: formData,
+        }
+      );
       const data = await res.json();
 
       if (res.ok) {
@@ -616,14 +624,17 @@ export default function TeacherDashboard() {
 
   const handleSubmitMcqs = async (courseId, moduleId) => {
     try {
-      const res = await fetch(`/api/courses/${courseId}/module/${moduleId}/mcqs`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-        body: JSON.stringify({ mcqs: pendingMcqs }),
-      });
+      const res = await fetch(
+        `/api/courses/${courseId}/module/${moduleId}/mcqs`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+          body: JSON.stringify({ mcqs: pendingMcqs }),
+        }
+      );
       const data = await res.json();
 
       if (res.ok) {
@@ -638,30 +649,34 @@ export default function TeacherDashboard() {
       toast.error("Server error submitting MCQs");
     }
   };
-    return (
+
+  return (
     <div className="p-6">
       <h1 className="text-2xl font-bold mb-6">Teacher Dashboard</h1>
 
       {/* Tabs */}
       <ToastContainer position="top-right" autoClose={2000} />
       <div className="flex gap-4 border-b mb-6">
-        {["profile", "courses", "wallet", "feedback"].map((tab) => (
-          <button
-            key={tab}
-            onClick={() => setActiveTab(tab)}
-            className={`flex items-center gap-2 px-4 py-2 ${
-              activeTab === tab
-                ? "border-b-2 border-blue-600 text-blue-600"
-                : "text-gray-600"
-            }`}
-          >
-            {tab === "profile" && <User size={18} />}
-            {tab === "courses" && <BookOpen size={18} />}
-            {tab === "wallet" && <Wallet size={18} />}
-            {tab === "feedback" && <Star size={18} />}
-            {tab.charAt(0).toUpperCase() + tab.slice(1)}
-          </button>
-        ))}
+        {["profile", "courses", "wallet", "feedback", "certificates"].map(
+          (tab) => (
+            <button
+              key={tab}
+              onClick={() => setActiveTab(tab)}
+              className={`flex items-center gap-2 px-4 py-2 ${
+                activeTab === tab
+                  ? "border-b-2 border-blue-600 text-blue-600"
+                  : "text-gray-600"
+              }`}
+            >
+              {tab === "profile" && <User size={18} />}
+              {tab === "courses" && <BookOpen size={18} />}
+              {tab === "wallet" && <Wallet size={18} />}
+              {tab === "feedback" && <Star size={18} />}
+              {tab === "certificates" && <PlusCircle size={18} />}
+              {tab.charAt(0).toUpperCase() + tab.slice(1)}
+            </button>
+          )
+        )}
       </div>
 
       {/* Profile Tab */}
@@ -714,13 +729,12 @@ export default function TeacherDashboard() {
       {/* Courses Tab */}
       {activeTab === "courses" && (
         <div className="grid gap-6 p-6">
-              <CreateCourse onCreated={() => window.location.reload()} />
-              <CourseList />
-              <ApproveCourse />
-              <ManageModules courseId="<courseId_here>" />
-              <SubmitExam courseId="<courseId_here>" />
-            
-            </div>
+          <CreateCourse onCreated={() => window.location.reload()} />
+          <CourseList />
+          <ApproveCourse />
+          <ManageModules courseId="<courseId_here>" />
+          <SubmitExam courseId="<courseId_here>" />
+        </div>
       )}
 
       {/* Wallet */}
@@ -739,6 +753,14 @@ export default function TeacherDashboard() {
         <div className="bg-white shadow rounded-xl p-6">
           <h2 className="font-semibold mb-4">Student Feedback</h2>
           <p className="text-gray-500">No feedback available yet.</p>
+        </div>
+      )}
+
+      {/* ✅ Certificates Tab */}
+      {activeTab === "certificates" && (
+        <div className="bg-white shadow rounded-xl p-6">
+          <h2 className="font-semibold mb-4">Issue Certificates</h2>
+          <TeacherCertificates /> {/* ✅ Only issue form now */}
         </div>
       )}
     </div>

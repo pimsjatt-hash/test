@@ -300,6 +300,7 @@ export default function CoursePage() {
     //   </div>
     // </div>
     <>
+    <h1>hello</h1>
     <DiscountBar />
     <div className="flex gap-6 flex-wrap">
     <CourseCard />

@@ -1,14 +1,16 @@
  // src/pages/StudentDashboard.jsx
 import React, { useEffect, useState } from "react";
+
 import { User, BookOpen, ClipboardList, Star } from "lucide-react";
- import {
+import {
   getStudentProfile,
   updateStudentProfile,
   getAvailableCourses,
   enrollInCourse,
   getMyCourses,
-  submitReview,
-} from "../api/api";   // ✅ corrected path
+  submitReview
+} from "../api/api"; // ✅ corrected path
+import StudentCertificate from "../pages/StudentCertificate";
 
 export default function StudentDashboard() {
   const [activeTab, setActiveTab] = useState("profile");
@@ -16,7 +18,6 @@ export default function StudentDashboard() {
     name: "",
     email: "",
     phone: "",
-    address: "",
   });
   const [availableCourses, setAvailableCourses] = useState([]);
   const [myCourses, setMyCourses] = useState([]);
@@ -106,6 +107,7 @@ export default function StudentDashboard() {
           { key: "courses", label: "Available Courses", icon: <BookOpen size={18} /> },
           { key: "mycourses", label: "My Courses", icon: <ClipboardList size={18} /> },
           { key: "reviews", label: "Reviews", icon: <Star size={18} /> },
+          { key: "certificates", label: "Certificates", icon: <ClipboardList size={18} /> }, // ✅ new tab
         ].map((tab) => (
           <button
             key={tab.key}
@@ -147,14 +149,6 @@ export default function StudentDashboard() {
             name="phone"
             value={profile.phone}
             placeholder="Phone"
-            onChange={handleProfileChange}
-            className="w-full border p-2 rounded"
-          />
-          <input
-            type="text"
-            name="address"
-            value={profile.address}
-            placeholder="Address"
             onChange={handleProfileChange}
             className="w-full border p-2 rounded"
           />
@@ -236,6 +230,13 @@ export default function StudentDashboard() {
           </button>
         </div>
       )}
+
+      {/* Certificates */}
+      {activeTab === "certificates" && (
+        <div className="bg-red-500">
+          <StudentCertificate />
+        </div>
+          )}
     </div>
   );
 }

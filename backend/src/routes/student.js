@@ -11,12 +11,20 @@ import {
 import {  allowRoles } from "../middleware/rbac.js"; // ✅ fix
 
 import { authMiddleware } from "../middleware/auth.js";
+import { getCertificatesByStudent } from "../controllers/certificateController.js";
 
 const router = express.Router();
 
 // Profile
 router.get("/profile", authMiddleware, allowRoles("student"), getStudentProfile);
 router.put("/profile", authMiddleware, allowRoles("student"), updateStudentProfile);
+
+router.get(
+  "/student/:studentId",
+  authMiddleware,
+  allowRoles("student", "superadmin", "university"),
+  getCertificatesByStudent
+);
 
 // Courses
 router.get("/courses", authMiddleware, getCourses);
@@ -25,7 +33,7 @@ router.get("/my-courses", authMiddleware, myCourses);
 
 // Reviews
 router.post("/review", authMiddleware, reviewCourse);
-console.log("✅ studentRoutes loaded");
+// console.log("✅ studentRoutes loaded");
 
 
 export default router;

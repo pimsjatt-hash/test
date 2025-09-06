@@ -12,6 +12,13 @@ import WhatsappButoon from "./components/WhatsappButoon";
 import CoursePage from "./pages/CoursePage";
 import TeacherPage from "./pages/TeacherPage";
 import Studentpage from "./pages/StudentPage";
+import CertificateItem from "./components/Certificatemanagement/CertificateItem";
+import CertificateList from "./components/Certificatemanagement/CertificateList";
+import CertificateManagerDashboard from "./components/dashboard components/CertificateManagerDashboard";
+import CertificatePreview from "./components/Certificatemanagement/CertificatePreview";
+import CertificateTemplateForm from "./components/Certificatemanagement/CertificateTemplateForm";
+import CertificateManagerPage from "./pages/certificatepage";
+
  
 
 export default function App() {
@@ -43,6 +50,7 @@ export default function App() {
           <Route path="/login" element={<LogIn />} />
           <Route path="/signup" element={<SignUp />} />
           <Route path="/courses" element={<CoursePage />} />
+          <Route path="/certificate" element={<CertificateManagerPage />} />
          
           <Route path="*" element={<h1>404 Not Found</h1>} />
         </Routes>

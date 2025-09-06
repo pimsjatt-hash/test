@@ -1,8 +1,9 @@
  // src/controllers/courseController.js
 import Course from "../models/course.js";
-import { IssuedCertificate, CertificateTemplate } from "../models/certificate.js";
+// import { IssuedCertificate, CertificateTemplate } from "../models/certificate.js";
 import User from "../models/user.js";
 import crypto from "crypto";
+import { createCertificatePDF } from "../utils/pdfGenerator.js";
 
 // --- permission helper: teacher/university owner or superadmin ---
 const canEditCourse = (course, user) => {
@@ -23,7 +24,7 @@ const canDeleteCourse = (course, user) => {
   );
 };
 
-// --- CREATE COURSE ---
+ //--- CREATE COURSE ---
 export const createCourse = async (req, res) => {
   try {
     const {
@@ -49,17 +50,25 @@ export const createCourse = async (req, res) => {
       prerequisites,
       tags,
       createdBy: req.user.id,
+
+      // ✅ Auto-generated course_id
+      courseuniqueId: crypto.randomBytes(5).toString("hex"),
+
       isApprovedByUniversity:
-        teacher.role === "university" || !teacher.affiliatedUniversity ? true : false,
+        teacher.role === "university" || !teacher.affiliatedUniversity
+          ? true
+          : false,
       isApprovedBySuperAdmin: false,
     });
 
-    res.status(201).json({ message: "Course created, pending approval", course });
+    res
+      .status(201)
+      .json({ message: "Course created, pending approval", course });
   } catch (e) {
+    console.error("Error creating course:", e);
     res.status(500).json({ message: e.message });
   }
 };
-
 // --- APPROVE COURSE ---
 // export const approveCourse = async (req, res) => {
 //   try {
@@ -247,13 +256,76 @@ export const addMcqs = async (req, res) => {
 };
 
 // --- SUBMIT EXAM ---
+// export const submitExam = async (req, res) => {
+//   try {
+//     const { courseId } = req.params;
+//     const { answers, templateId } = req.body;
+
+//     if (!Array.isArray(answers)) return res.status(400).json({ message: "Answers array required" });
+//     if (!templateId) return res.status(400).json({ message: "templateId required" });
+
+//     const student = await User.findById(req.user.id);
+//     if (!student || student.role !== "student")
+//       return res.status(403).json({ message: "Only students can submit exam" });
+
+//     const course = await Course.findById(courseId);
+//     if (!course || !course.isApproved)
+//       return res.status(404).json({ message: "Course not found or not approved" });
+
+//     if (!course.enrolledStudents.includes(student._id))
+//       return res.status(403).json({ message: "Student not enrolled in this course" });
+
+//     // --- scoring ---
+//     let total = 0;
+//     let correct = 0;
+//     const ansMap = new Map();
+//     answers.forEach((a) => ansMap.set(`${a.moduleId}:${a.questionIndex}`, (a.answer || "").trim().toLowerCase()));
+
+//     course.modules.forEach((m) => {
+//       m.mcqs.forEach((q, i) => {
+//         total++;
+//         const key = `${m._id}:${i}`;
+//         const given = (ansMap.get(key) || "").trim().toLowerCase();
+//         if (given && given === (q.correctAnswer || "").trim().toLowerCase()) correct++;
+//       });
+//     });
+
+//     const scorePercent = total ? Math.round((correct / total) * 100) : 0;
+//     if (scorePercent < 33)
+//       return res.json({ passed: false, score: scorePercent, message: "Minimum passing 33%" });
+
+//     const template = await CertificateTemplate.findById(templateId);
+//     if (!template) return res.status(404).json({ message: "Template not found" });
+
+//     const certificateId = `CERT-${Date.now()}-${crypto.randomBytes(4).toString("hex").toUpperCase()}`;
+
+//         const issued = await IssuedCertificate.create({
+//           certificateId,
+//           student: student._id,
+//           course: course._id,
+//           template: template._id
+//         });
+    
+//         res.json({
+//           passed: true,
+//           score: scorePercent,
+//           certificateId: issued.certificateId,
+//           message: "Exam passed, certificate issued"
+//         });
+//       } catch (e) {
+//         res.status(500).json({ message: e.message });
+//       }
+//     };
+
 export const submitExam = async (req, res) => {
   try {
     const { courseId } = req.params;
     const { answers, templateId } = req.body;
 
-    if (!Array.isArray(answers)) return res.status(400).json({ message: "Answers array required" });
-    if (!templateId) return res.status(400).json({ message: "templateId required" });
+    if (!Array.isArray(answers))
+      return res.status(400).json({ message: "Answers array required" });
+    if (!templateId)
+      return res.status(400).json({ message: "templateId required" });
 
     const student = await User.findById(req.user.id);
     if (!student || student.role !== "student")
@@ -264,46 +336,86 @@ export const submitExam = async (req, res) => {
       return res.status(404).json({ message: "Course not found or not approved" });
 
     if (!course.enrolledStudents.includes(student._id))
-      return res.status(403).json({ message: "Student not enrolled in this course" });
+      return res
+        .status(403)
+        .json({ message: "Student not enrolled in this course" });
 
     // --- scoring ---
     let total = 0;
     let correct = 0;
     const ansMap = new Map();
-    answers.forEach((a) => ansMap.set(`${a.moduleId}:${a.questionIndex}`, (a.answer || "").trim().toLowerCase()));
+    answers.forEach((a) =>
+      ansMap.set(
+        `${a.moduleId}:${a.questionIndex}`,
+        (a.answer || "").trim().toLowerCase()
+      )
+    );
 
     course.modules.forEach((m) => {
       m.mcqs.forEach((q, i) => {
         total++;
         const key = `${m._id}:${i}`;
         const given = (ansMap.get(key) || "").trim().toLowerCase();
-        if (given && given === (q.correctAnswer || "").trim().toLowerCase()) correct++;
+        if (given && given === (q.correctAnswer || "").trim().toLowerCase())
+          correct++;
       });
     });
 
     const scorePercent = total ? Math.round((correct / total) * 100) : 0;
     if (scorePercent < 33)
-      return res.json({ passed: false, score: scorePercent, message: "Minimum passing 33%" });
+      return res.json({
+        passed: false,
+        score: scorePercent,
+        message: "Minimum passing 33%"
+      });
 
+    // --- certificate issuance ---
     const template = await CertificateTemplate.findById(templateId);
-    if (!template) return res.status(404).json({ message: "Template not found" });
+    if (!template)
+      return res.status(404).json({ message: "Template not found" });
 
-    const certificateId = `CERT-${Date.now()}-${crypto.randomBytes(4).toString("hex").toUpperCase()}`;
+    const uniqueId = crypto.randomBytes(8).toString("hex");
 
-        const issued = await IssuedCertificate.create({
-          certificateId,
-          student: student._id,
-          course: course._id,
-          template: template._id
-        });
-    
-        res.json({
-          passed: true,
-          score: scorePercent,
-          certificateId: issued.certificateId,
-          message: "Exam passed, certificate issued"
-        });
-      } catch (e) {
-        res.status(500).json({ message: e.message });
+    // generate certificate PDF
+    const { publicPath, qrUrl } = await createCertificatePDF({
+      studentName: student.fullName || student.name || student.email,
+      courseTitle: course.title,
+      uniqueId,
+      issuedAt: new Date(),
+      logoUrl: template.logoUrl,
+      backgroundUrl: template.backgroundUrl,
+      signatories: template.signatories,
+      templateLayout: template.layout || {
+        validationBaseUrl: process.env.PUBLIC_BASE_URL || ""
       }
-    };
+    });
+
+    const issued = await IssuedCertificate.create({
+      uniqueId,
+      studentId: student._id,
+      studentName: student.fullName || student.name || student.email,
+      courseId: course._id,
+      courseTitle: course.title,
+      templateId: template._id,
+      score: scorePercent,
+      issuedAt: new Date(),
+      pdfUrl: publicPath,
+      qrUrl
+    });
+
+    return res.json({
+      passed: true,
+      score: scorePercent,
+      certificate: {
+        id: issued._id,
+        uniqueId: issued.uniqueId,
+        pdfUrl: issued.pdfUrl,
+        qrUrl: issued.qrUrl
+      },
+      message: "Exam passed, certificate issued"
+    });
+  } catch (e) {
+    console.error("submitExam error:", e);
+    res.status(500).json({ message: e.message });
+  }
+};

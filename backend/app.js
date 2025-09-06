@@ -22,7 +22,8 @@ import roleManagerRoutes from "./src/Routes/rolemanager.js";
 import userRoutes from "./src/Routes/user.js";
 import teacherRoutes from "./src/Routes/teacher.js";
 import studentRoutes from "./src/Routes/student.js";
-import { getReports } from "./src/controllers/superAdmincontroller.js";
+import { getReports } from "./src/controllers/superAdminController.js";
+
 
 
 // load environment variables
@@ -49,17 +50,16 @@ app.use(
 // -------------------
 // Middlewares
 // -------------------
-
-// JSON parser
+ // JSON parser first
 app.use(express.json({ limit: "2mb" }));
 
-// File upload
+// File upload middleware
 app.use(
   fileUpload({
     useTempFiles: true,
-    tempFileDir: path.join(__dirname, "tmp"), // temp folder inside project
+    tempFileDir: path.join(__dirname, "tmp"),
     createParentPath: true,
-    limits: { fileSize: 10 * 1024 * 1024 }, // optional: 10MB max
+    limits: { fileSize: 10 * 1024 * 1024 },
   })
 );
 
@@ -81,13 +81,19 @@ app.get("/healthz", (req, res) => res.json({ ok: true }));
 // -------------------
 app.use("/api/auth", authRoutes); //done
 app.use("/api/superadmin", superAdminRoutes); //DONE
-console.log("✅ superAdminRoutes loaded");
+// console.log("✅ superAdminRoutes loaded");
 app.use("/api/courses", courseRoutes);
 app.use("/api/teacher", teacherRoutes);
 app.use("/api/blogs", blogRoutes);
 app.use("/api/finance", financeRoutes);
 app.use("/api/governance", governanceRoutes);
+// app.use("/api/certificates", certificateRoutes);
 app.use("/api/certificates", certificateRoutes);
+// serve static certificates
+app.use("/certificates", express.static(path.join(process.cwd(), "public", "certificates")));
+
+app.use("/signatures", express.static(path.join(process.cwd(), "public", "signatures")));
+
 app.use("/api/coupons", couponRoutes); // done
 app.use("/api/rolemanager", roleManagerRoutes);
 app.use("/api/users", userRoutes); // done

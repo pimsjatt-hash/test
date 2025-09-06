@@ -181,9 +181,43 @@ export const deleteBlog = (id) => API.delete(`/blogs/${id}`);
 
 
 
- /* ====================== CERTIFICATE APIs ====================== */
+//  /* ====================== CERTIFICATE APIs ====================== */
 
-// ✅ Create Certificate Template (JSON only)
+// // ✅ Create Certificate Template (JSON only)
+// export const createCertificateTemplate = (data) =>
+//   API.post("/certificates/templates", data);
+
+// // ✅ Get All Templates
+// export const getCertificateTemplates = () =>
+//   API.get("/certificates/templates");
+
+// // ✅ Delete Template
+// export const deleteCertificateTemplate = (id) =>
+//   API.delete(`/certificates/templates/${id}`);
+
+// // ✅ Issue Certificate (Teacher / University / SuperAdmin)
+// export const issueCertificate = (data) =>
+//   API.post("/certificates/issue", data);
+
+// //✅ Approve Certificate (University)
+// export const approveCertificate = (id) =>
+//   API.put(`/certificates/approve/${id}`);
+
+// // ✅ Verify Certificate (Public)
+// export const verifyCertificate = (certificateId) =>
+//   API.get(`/certificates/verify/${certificateId}`);
+
+// // ✅ Get My Certificates (Student)
+// export const getMyCertificates = () =>
+//   API.get("/certificates/my");
+
+// // Student download certificate
+// export const downloadCertificate = (certificateId) =>
+//   API.get(`/certificates/download/${certificateId}`, { responseType: "blob" });
+
+/* ====================== CERTIFICATE APIs ====================== */
+
+// ✅ Create Certificate Template
 export const createCertificateTemplate = (data) =>
   API.post("/certificates/templates", data);
 
@@ -191,25 +225,47 @@ export const createCertificateTemplate = (data) =>
 export const getCertificateTemplates = () =>
   API.get("/certificates/templates");
 
+
+// export const getCertificates = () =>
+//   API.get("/certificates/mine"); // endpoint returns certificates for the logged-in student
+
 // ✅ Delete Template
 export const deleteCertificateTemplate = (id) =>
   API.delete(`/certificates/templates/${id}`);
 
-// ✅ Issue Certificate (Teacher / University / SuperAdmin)
+
+
+// ✅ Update Certificate Template
+export const updateCertificateTemplate = (templateId, data) =>
+  API.put(`/certificates/templates/${templateId}`, data);
+
+// ✅ Upload a Signature (SuperAdmin/University only)
+// data = FormData with signature, name, title
+export const uploadSignature = (templateId, data) =>
+  API.post(`/certificates/signatures/${templateId}`, data, {
+    headers: { "Content-Type": "multipart/form-data" },
+  });
+
+// ✅ Issue Certificate (auto after exam OR manually by authorized roles)
 export const issueCertificate = (data) =>
   API.post("/certificates/issue", data);
 
-//✅ Approve Certificate (University)
-export const approveCertificate = (id) =>
-  API.put(`/certificates/approve/${id}`);
+// ✅ Validate Certificate (Public check by uniqueId)
+export const validateCertificate = (uniqueId) =>
+  API.get(`/certificates/validate/${uniqueId}`);
 
-// ✅ Verify Certificate (Public)
-export const verifyCertificate = (certificateId) =>
-  API.get(`/certificates/verify/${certificateId}`);
+// ✅ Approve Certificate (Governance body)
+export const approveCertificate = (uniqueId) =>
+  API.patch(`/certificates/validate/${uniqueId}`);
 
 // ✅ Get My Certificates (Student)
-export const getMyCertificates = () =>
-  API.get("/certificates/my");
+export const getCertificates = () =>
+  API.get("/certificates/MY");
+
+// ✅ Get Certificates for a Student (SuperAdmin/University)
+export const getCertificatesByStudent = (studentId) =>
+  API.get(`/certificates/student/${studentId}`);
+
 
 
 
