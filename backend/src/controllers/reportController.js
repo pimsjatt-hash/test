@@ -7,7 +7,7 @@ import User from "../models/user.js";
 import Course from "../models/course.js";
 import Enrollment from "../models/Enrollment.js"; // ✅ correct
 
-import { generatePDF, generateExcel, generateWord } from "../utils/report.js";
+import { generatePDF, generateExcel, generateWord } from "../utils/Report.js";
 
 // Create Report
 export const createReport = async (req, res) => {

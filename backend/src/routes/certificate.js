@@ -114,7 +114,7 @@ import {
   downloadCertificate,
   getPendingCertificates,
   getDefaultTemplate,
-} from "../controllers/certificateController.js";
+} from "../controllers/certificatecontroller.js";
 
 import { authMiddleware } from "../middleware/auth.js";
 import { allowRoles } from "../middleware/rbac.js";

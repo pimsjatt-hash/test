@@ -1,4 +1,4 @@
-import { Job, Webinar,Guide } from "../models/careerCell.js";
+import { Job, Webinar,Guide } from "../models/CareerCell.js";
 
 // ✅ Add Job / Internship
 export const addJob = async (req, res) => {

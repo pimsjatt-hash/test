@@ -112,7 +112,7 @@
 
 
 // backend/src/controllers/mouController.js
-import Mou from "../models/mou.js";
+import Mou from "../models/Mou.js";
 import path from "path";
 import fs from "fs";
 

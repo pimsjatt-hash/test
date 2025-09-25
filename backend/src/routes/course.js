@@ -13,7 +13,7 @@ import {
 } from "../controllers/coursecontroller.js";
 import { authMiddleware } from "../middleware/auth.js";
 import { allowRoles } from "../middleware/rbac.js";
-import { uploadVideo, uploadNotes } from "../utils/uploadCourse.js";
+//import { uploadVideo, uploadNotes } from "../utils/uploadCourse.js";
 
 const router = express.Router();
 

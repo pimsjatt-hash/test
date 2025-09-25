@@ -11,7 +11,7 @@ import {
 import {  allowRoles } from "../middleware/rbac.js"; // ✅ fix
 
 import { authMiddleware } from "../middleware/auth.js";
-import { getCertificatesByStudent } from "../controllers/certificateController.js";
+import { getCertificatesByStudent } from "../controllers/certificatecontroller.js";
 
 const router = express.Router();
 

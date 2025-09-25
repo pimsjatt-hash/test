@@ -1,4 +1,4 @@
-import { deleteBlog } from "../api";
+import { deleteBlog } from "../../api/api";
 
 export default function DeleteBlog({ blogId, onDeleted }) {
   const handleDelete = async () => {

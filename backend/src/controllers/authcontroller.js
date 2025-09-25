@@ -6,49 +6,144 @@ import crypto from "crypto";
 
 // ---------------- SIGNUP ----------------
   
+// export const sendOtp = async (req, res) => {
+//   try {
+//     const { email } = req.body;
+//     if (!email) return res.status(400).json({ message: "Email is required" });
+
+//     const existingUser = await User.findOne({ email });
+//     if (existingUser) return res.status(400).json({ message: "Email already exists" });
+
+//     const generatedOtp = Math.floor(100000 + Math.random() * 900000).toString();
+//     const expiresAt = new Date(Date.now() + 10 * 60 * 1000); // 10 mins
+
+//     await Otp.deleteMany({ email }); // clear old OTPs
+
+//     await Otp.create({ email, otp: generatedOtp, expiresAt });
+
+//     await transporter.sendMail({
+//       from: process.env.SMTP_USER,
+//       to: email,
+//       subject: "Your Signup OTP",
+//       html: `<p>Your OTP is <b>${generatedOtp}</b>. It expires in 10 minutes.</p>`,
+//     });
+
+//     res.status(200).json({ message: "OTP sent to your email" });
+//   } catch (err) {
+//     res.status(500).json({ message: err.message });
+//   }
+// };
+
+// export const verifyOtp = async (req, res) => {
+//   try {
+//     const { email, otp } = req.body;
+//     if (!email || !otp) return res.status(400).json({ message: "Email and OTP are required" });
+
+//     const record = await Otp.findOne({ email, otp });
+//     if (!record) return res.status(400).json({ message: "Invalid OTP" });
+//     if (record.expiresAt < new Date()) return res.status(400).json({ message: "OTP expired" });
+
+//     await Otp.deleteOne({ _id: record._id }); // OTP one-time use
+//     res.status(200).json({ message: "OTP verified" });
+//   } catch (err) {
+//     res.status(500).json({ message: err.message });
+//   }
+// };
 export const sendOtp = async (req, res) => {
   try {
     const { email } = req.body;
-    if (!email) return res.status(400).json({ message: "Email is required" });
+    if (!email || typeof email !== "string") {
+      return res.status(400).json({ message: "Email is required" });
+    }
 
-    const existingUser = await User.findOne({ email });
-    if (existingUser) return res.status(400).json({ message: "Email already exists" });
+    const normalizedEmail = email.trim().toLowerCase();
 
+    // Check if user already exists (you might want to allow existing users for different flows)
+    const existingUser = await User.findOne({ email: normalizedEmail }).lean();
+    if (existingUser) {
+      return res.status(400).json({ message: "Email already exists" });
+    }
+
+    // generate OTP and expiry
     const generatedOtp = Math.floor(100000 + Math.random() * 900000).toString();
-    const expiresAt = new Date(Date.now() + 10 * 60 * 1000); // 10 mins
+    const expiresAt = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
 
-    await Otp.deleteMany({ email }); // clear old OTPs
+    // remove old OTPs for this email
+    await Otp.deleteMany({ email: normalizedEmail });
 
-    await Otp.create({ email, otp: generatedOtp, expiresAt });
+    // create new OTP record
+    await Otp.create({ email: normalizedEmail, otp: generatedOtp, expiresAt });
 
-    await transporter.sendMail({
-      from: process.env.SMTP_USER,
-      to: email,
+    // Build mail
+    const from = process.env.SUPPORT_EMAIL || process.env.SMTP_USER || "no-reply@example.com";
+    const mailOptions = {
+      from,
+      to: normalizedEmail,
       subject: "Your Signup OTP",
       html: `<p>Your OTP is <b>${generatedOtp}</b>. It expires in 10 minutes.</p>`,
-    });
+      text: `Your OTP is ${generatedOtp}. It expires in 10 minutes.`,
+    };
 
-    res.status(200).json({ message: "OTP sent to your email" });
+    // send email using safe helper
+    const result = await sendEmailSafe(mailOptions);
+
+    if (!result.ok) {
+      // Mailer failed — respond with 502 Bad Gateway (upstream service failure)
+      console.error("sendOtp: email send failed for", normalizedEmail, "reason:", result.error);
+      return res.status(502).json({ message: "Failed to send OTP email", detail: result.error });
+    }
+
+    // success
+    return res.status(200).json({ message: "OTP sent to your email" });
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    console.error("sendOtp: unexpected error:", err && err.stack ? err.stack : err);
+    return res.status(500).json({ message: "Internal Server Error", detail: err && err.message });
   }
 };
 
+/**
+ * POST /auth/otp/verify
+ * Body: { email, otp }
+ */
 export const verifyOtp = async (req, res) => {
   try {
     const { email, otp } = req.body;
-    if (!email || !otp) return res.status(400).json({ message: "Email and OTP are required" });
+    if (!email || !otp) {
+      return res.status(400).json({ message: "Email and OTP are required" });
+    }
 
-    const record = await Otp.findOne({ email, otp });
-    if (!record) return res.status(400).json({ message: "Invalid OTP" });
-    if (record.expiresAt < new Date()) return res.status(400).json({ message: "OTP expired" });
+    const normalizedEmail = String(email).trim().toLowerCase();
+    const otpCode = String(otp).trim();
 
-    await Otp.deleteOne({ _id: record._id }); // OTP one-time use
-    res.status(200).json({ message: "OTP verified" });
+    // find OTP record (use a proper index on email+otp for performance)
+    const record = await Otp.findOne({ email: normalizedEmail, otp: otpCode });
+    if (!record) {
+      return res.status(400).json({ message: "Invalid OTP" });
+    }
+
+    if (record.expiresAt < new Date()) {
+      // expired: remove it and return error
+      try {
+        await Otp.deleteOne({ _id: record._id });
+      } catch (e) {
+        console.warn("verifyOtp: failed to delete expired OTP:", e && e.message ? e.message : e);
+      }
+      return res.status(400).json({ message: "OTP expired" });
+    }
+
+    // one-time use: delete OTP
+    await Otp.deleteOne({ _id: record._id });
+
+    // At this point you may create the user or mark verification
+    // For example, create a new user doc or return success so frontend proceeds to signup
+    return res.status(200).json({ message: "OTP verified" });
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    console.error("verifyOtp: unexpected error:", err && err.stack ? err.stack : err);
+    return res.status(500).json({ message: "Internal Server Error", detail: err && err.message });
   }
 };
+
+
 
 
  export const signup = async (req, res) => {

@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 // import CreateCertificateTemplate from "";
-import CertificateTemplates from "../Certificatemanagement/CertificateTemplates";
+//import CertificateTemplates from "../Certificatemanagement/CertificateTemplates";
 import { deleteCertificateTemplate } from "../../api/api";
 
 export default function CertificateManagement() {

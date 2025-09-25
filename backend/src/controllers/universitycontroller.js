@@ -2,7 +2,7 @@
 import User from "../models/user.js";
 import Course from "../models/course.js";
 //import Payment from "../models/payment.js";
-import { IssuedCertificate } from "../models/certificate.js";
+import { IssuedCertificate } from "../models/Certificate.js";
 import ExamResult from "../models/ExamResult.js";
 import ExcelJS from "exceljs";
 import PDFDocument from "pdfkit";

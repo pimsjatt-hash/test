@@ -1,5 +1,5 @@
 // controllers/couponController.js
-import Coupon from "../models/coupon.js";
+import Coupon from "../models/Coupon.js";
 
 // ✅ Create Coupon
 export const createCoupon = async (req, res) => {

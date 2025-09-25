@@ -405,7 +405,7 @@
 // }
 
 
-import {  IssuedCertificate, CertificateTemplate } from "../models/certificate.js";
+import {  IssuedCertificate, CertificateTemplate } from "../models/Certificate.js";
 import crypto from "crypto";
 import path from "path";
 import fs from "fs";

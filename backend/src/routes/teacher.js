@@ -31,7 +31,7 @@ import { uploadVideo, uploadNotes,uploadAny } from "../utils/uploadCourse.js";
 
 import{
   issueCertificate
-}from "../controllers/certificateController.js";
+}from "../controllers/certificatecontroller.js";
 
 
 // Configure Multer

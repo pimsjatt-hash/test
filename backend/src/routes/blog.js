@@ -14,7 +14,7 @@
 import express from "express";
 import { authMiddleware } from "../middleware/auth.js";   // ✅ correct path & name
 import { allowRoles, requireSubAdminRole } from "../middleware/rbac.js";
-import { createBlog, getBlogs ,deleteBlog} from "../controllers/blogController.js";
+import { createBlog, getBlogs ,deleteBlog} from "../controllers/blogcontroller.js";
 
 const router = express.Router();
 

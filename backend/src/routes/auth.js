@@ -9,7 +9,7 @@ import {
   loginWithOtp
 } from "../controllers/authcontroller.js";
 
-import { authMiddleware } from "../middleware/auth.js"; // if needed for protected routes
+//import { authMiddleware } from "../middleware/auth.js"; // if needed for protected routes
 
 const router = Router();
 

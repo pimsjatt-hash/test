@@ -325,6 +325,7 @@ import { getApproveCourses, getCoupons } from "../api/api";
 import CourseCard from "../components/CourseCard";
 import DiscountBar from "../components/DiscountBar";
 import { jwtDecode } from "jwt-decode";
+import { toast } from "react-toastify";
 
 export default function CoursePage() {
   const [courses, setCourses] = useState([]);
@@ -358,6 +359,8 @@ export default function CoursePage() {
         // console.log("Fetched courses:", coursesRes.data);
         
         setCourses(coursesRes.data);
+        console.log("curses",coursesRes);
+        
 
         // Fetch coupons
         // const couponsRes = await getCoupons();
